@@ -46,7 +46,7 @@ struct DelayLine : vector<float> {
 };
 
 struct StringSimulator : DelayLine {
-  float freq, lastSamp{0};
+  float freq, lastSamp{0}, decayFactor=0.95;
 
   StringSimulator(float frequency=440, float minFrequency=20) :
   DelayLine(int(SAMPLE_RATE / minFrequency)), freq(frequency)
@@ -54,24 +54,37 @@ struct StringSimulator : DelayLine {
 
   float operator ()() {
     float delayedSamp = tap_out_f(SAMPLE_RATE / freq);
-    float output = (delayedSamp + lastSamp) / 2;
+    float output = (delayedSamp + lastSamp) / 2 * decayFactor;
     lastSamp = delayedSamp;
     tap_in(output);
     return output;
   }
 
   void pluck(float stringLoc) {
-    uniform(-1, 1);
+    // fill 5% of the delay line with noise starting at stringLoc where
+    // a stringLoc of 0 puts in the middle and 1 puts it on the edge
+    int startOfNoise = index - int(SAMPLE_RATE / freq * (0.5 + stringLoc / 2));
+    int endOfNoise = startOfNoise + int(SAMPLE_RATE / freq * 0.1);
+    for(int k = startOfNoise; k < endOfNoise; k++) {
+      int writeLocation = (k < 0) ? k + size() : k;
+      float envelopePosition = float(k - startOfNoise) / (endOfNoise - startOfNoise);
+      at(writeLocation) += uniform(-1, 1) *
+        ((envelopePosition > 0.5) ? 2 * (1 - envelopePosition): 2* envelopePosition);
+    }
   }
-
 };
 
 int main(int argc, char const *argv[]) {
   /* code */
   StringSimulator string;
-  string.at(string.size()-1) = 1.0;
-  for(int i=0; i < 204; i++) {
-    say(string());
+  string.freq = 220;
+
+  for(float pluckLoc = 0; pluckLoc <= 1.0; pluckLoc += 0.05) {
+    // pluckLoc doesn't seem to work :-(
+    string.pluck(pluckLoc);
+    for(int i=0; i < 10000; i++) {
+      say(string());
+    }
   }
   return 0;
 }
