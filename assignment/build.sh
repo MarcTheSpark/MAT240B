@@ -1,4 +1,4 @@
-rm stringGranulator ../../unix/output.wav
+rm stringGranulator out.wav
 c++ --std=c++11 stringGranulator.cpp -o stringGranulator
-./stringGranulator AnamnesisReadingShort.ogg -t "stringToGranulate.txt"
-# xdg-open ../unix/output.wav
+./stringGranulator WeirdPoem.wav -t "stringToGranulate.txt" | ../../unix/write.exe
+xdg-open out.wav
