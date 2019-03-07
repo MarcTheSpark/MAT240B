@@ -1,0 +1,4 @@
+- Get the sound up and running
+- Settings document? .conf file with key value pairs. If you get a match, set it. re("grainSize (.*)")
+- Try it with a bunch of different sounds
+- bring back the delimiters, and maybe interpret them as silence?

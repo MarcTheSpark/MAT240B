@@ -335,12 +335,12 @@ int main (int argc, char **argv)
   StringRecombinator inputRecombinator(textInput, wordDelimiter,
     sentenceDelimiter, paragraphDelimiter);
 
-  // printf("%s\n", inputRecombinator.regenerate(
-  //   wordStretch, sentenceStretch, paragraphStretch, documentStretch).c_str());
-  for(auto& grain : grains.grainsByLoudness) {
-    for(float sample : grain) {
-      say(sample);
-    }
-  }
+  printf("%s\n", inputRecombinator.regenerate(
+    wordStretch, sentenceStretch, paragraphStretch, documentStretch).c_str());
+  // for(auto& grain : grains.grainsByLoudness) {
+  //   for(float sample : grain) {
+  //     say(sample);
+  //   }
+  // }
   exit (0);
 }
