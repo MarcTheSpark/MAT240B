@@ -1,0 +1,1 @@
+maybe modulate playback rate, exact grain location.
