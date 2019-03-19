@@ -18,6 +18,10 @@ struct StringGranulatorConfig {
          paragraphDelimiter = R"(\n)";
   float wordStretch = 1, sentenceStretch = 1,
         paragraphStretch = 1, documentStretch = 1;
+  int wordSpacing = 1, sentenceSpacing = 2, paragraphSpacing = 3;
+  float contentGrainMinLoudness = 0.5, contentGrainMaxLoudness = 1.0;
+  float wordDelimiterGrainLoudness = 0.3, sentenceDelimiterGrainLoudness = 0.2,
+    paragraphDelimiterGrainLoudness = 0.1;
   float grainLength = 0.1;
   string outputFileName = "out.wav";
 };
@@ -52,6 +56,22 @@ void parseConfigFile(string configFilePath, StringGranulatorConfig &configObject
           configObject.paragraphStretch = atof(variableValue.c_str());
         } else if (variableName == "documentStretch") {
           configObject.documentStretch = atof(variableValue.c_str());
+        } else if (variableName == "wordSpacing") {
+          configObject.wordSpacing = atoi(variableValue.c_str());
+        } else if (variableName == "sentenceSpacing") {
+          configObject.sentenceSpacing = atoi(variableValue.c_str());
+        } else if (variableName == "paragraphSpacing") {
+          configObject.paragraphSpacing = atoi(variableValue.c_str());
+        } else if (variableName == "contentGrainMinLoudness") {
+          configObject.contentGrainMinLoudness = atof(variableValue.c_str());
+        } else if (variableName == "contentGrainMaxLoudness") {
+          configObject.contentGrainMaxLoudness = atof(variableValue.c_str());
+        } else if (variableName == "wordDelimiterGrainLoudness") {
+          configObject.wordDelimiterGrainLoudness = atof(variableValue.c_str());
+        } else if (variableName == "sentenceDelimiterGrainLoudness") {
+          configObject.sentenceDelimiterGrainLoudness = atof(variableValue.c_str());
+        } else if (variableName == "paragraphDelimiterGrainLoudness") {
+          configObject.paragraphDelimiterGrainLoudness = atof(variableValue.c_str());
         } else if (variableName == "grainLength") {
           configObject.grainLength = atof(variableValue.c_str());
         } else if (variableName == "outputFileName") {

@@ -48,19 +48,28 @@ int main (int argc, char **argv)
 
   string recombinedString = inputRecombinator.regenerate(
     config.wordStretch, config.sentenceStretch,
-    config.paragraphStretch, config.documentStretch
+    config.paragraphStretch, config.documentStretch,
+    config.wordSpacing, config.sentenceSpacing, config.paragraphSpacing
   );
 
   vector<pair<unsigned, GrainPlayer>> grainSchedule;
 
   unsigned grainStart = 0;
 
+  cout << "Scheduling grains..." << endl;
   for (char c : recombinedString) {
     float grainLoudness;
-    if(c < 0) {
-      grainLoudness = uniform(0, 0.2);
+    if(c == - 1) {
+      grainLoudness = config.wordDelimiterGrainLoudness;
+    } else if (c == -2) {
+      grainLoudness = config.sentenceDelimiterGrainLoudness;
+    } else if (c == -3) {
+      grainLoudness = config.paragraphDelimiterGrainLoudness;
     } else {
-      grainLoudness = 1 - 0.4 * letterFrequencyMap.letterFrequencyDictionary[c];
+      // note that the _least_ frequent grains are the _most_ loud and vice-versa
+      grainLoudness = scale(letterFrequencyMap.letterFrequencyDictionary[c], 0, 1,
+        config.contentGrainMaxLoudness, config.contentGrainMinLoudness);
+      // grainLoudness = 1 - 0.4 * letterFrequencyMap.letterFrequencyDictionary[c];
     }
     // vector<float> windowedGrain = grains.getWindowedGrain(grainLoudness);
     GrainPlayer thisGrainPlayer(grains.getWindowedGrain(grainLoudness));
@@ -69,13 +78,13 @@ int main (int argc, char **argv)
     grainSchedule.push_back(make_pair(grainStart, thisGrainPlayer));
     grainStart += grains.grainSampleLength / 2;
   }
+  cout << "done." << endl;
 
   unsigned endSample = grainStart + grains.grainSampleLength;
 
   vector<float> outputSamples;
 
-  int k = 0;
-
+  cout << "Constructing output..." << endl;
   while(outputSamples.size() < endSample) {
     float outputSample = 0;
     for (int i=0; i < grainSchedule.size(); i++) {
@@ -86,8 +95,11 @@ int main (int argc, char **argv)
         outputSample += grainPlayer.next();
       }
     }
+    if (outputSamples.size() % 10000 == 0) { cout << outputSamples.size()
+      << "/" << endSample << " samples written" << endl;}
     outputSamples.push_back(outputSample);
   }
+  cout << "done." << endl;
 
 
   writeWaveform(outputSamples, config.outputFileName);

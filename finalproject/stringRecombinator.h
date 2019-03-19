@@ -39,7 +39,8 @@ struct StringRecombinator {
   }
 
   string regenerate(float wordStretch, float sentenceStretch,
-    float paragraphStretch, float documentStretch)
+    float paragraphStretch, float documentStretch, int wordSpacing=1,
+    int sentenceSpacing=2, int paragraphSpacing=3)
   {
     string out = "";
     for(int p = 0; p < (paragraphs.size() * documentStretch); ++p)
@@ -63,11 +64,14 @@ struct StringRecombinator {
             out += (c < thisWord.length()) ?
               thisWord.at(c) : thisWord.at(rand() % thisWord.length());
           }
-          for(int _=0; _ < 4; _++) out += char(-1);
+          // a value of -1 represents a word break
+          for(int _=0; _ < wordSpacing; _++) out += char(-1);
         }
-        for(int _=0; _ < 6; _++) out += char(-2);
+        // a value of -2 represents a sentence break
+        for(int _=0; _ < sentenceSpacing; _++) out += char(-2);
       }
-      for(int _=0; _ < 8; _++) out += char(-3);
+      // a value of -1 represents a paragraph break
+      for(int _=0; _ < paragraphSpacing; _++) out += char(-3);
     }
     return out;
   }
