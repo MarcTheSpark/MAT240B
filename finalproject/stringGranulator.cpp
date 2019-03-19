@@ -8,6 +8,7 @@
 #include "stringRecombinator.h"
 #include "letterFrequencyMap.h"
 #include "utils/writeWaveform.h"
+#include "asciiFreq.h"
 #include <time.h>
 #include <regex>
 using namespace diy;
@@ -56,6 +57,8 @@ int main (int argc, char **argv)
 
   unsigned grainStart = 0;
 
+  ASCIIFreqMap asciiFrequencyMap;
+
   cout << "Scheduling grains..." << endl;
   for (char c : recombinedString) {
     float grainLoudness;
@@ -66,14 +69,17 @@ int main (int argc, char **argv)
     } else if (c == -3) {
       grainLoudness = config.paragraphDelimiterGrainLoudness;
     } else {
+      float letterFrequency = config.deriveLetterFrequencyFromText ?
+        letterFrequencyMap.letterFrequencyDictionary[c] :
+        asciiFrequencyMap.letterFrequencyDictionary[c];
+
       // note that the _least_ frequent grains are the _most_ loud and vice-versa
-      grainLoudness = scale(letterFrequencyMap.letterFrequencyDictionary[c], 0, 1,
+      grainLoudness = scale(letterFrequency, 0, 1,
         config.contentGrainMaxLoudness, config.contentGrainMinLoudness);
       // grainLoudness = 1 - 0.4 * letterFrequencyMap.letterFrequencyDictionary[c];
     }
     // vector<float> windowedGrain = grains.getWindowedGrain(grainLoudness);
     GrainPlayer thisGrainPlayer(grains.getWindowedGrain(grainLoudness));
-
 
     grainSchedule.push_back(make_pair(grainStart, thisGrainPlayer));
     grainStart += grains.grainSampleLength / 2;

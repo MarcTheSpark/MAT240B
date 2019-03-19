@@ -22,6 +22,7 @@ struct StringGranulatorConfig {
   float contentGrainMinLoudness = 0.5, contentGrainMaxLoudness = 1.0;
   float wordDelimiterGrainLoudness = 0.3, sentenceDelimiterGrainLoudness = 0.2,
     paragraphDelimiterGrainLoudness = 0.1;
+  bool deriveLetterFrequencyFromText = false;
   float grainLength = 0.1;
   string outputFileName = "out.wav";
 };
@@ -72,6 +73,8 @@ void parseConfigFile(string configFilePath, StringGranulatorConfig &configObject
           configObject.sentenceDelimiterGrainLoudness = atof(variableValue.c_str());
         } else if (variableName == "paragraphDelimiterGrainLoudness") {
           configObject.paragraphDelimiterGrainLoudness = atof(variableValue.c_str());
+        } else if (variableName == "deriveLetterFrequencyFromText") {
+          configObject.deriveLetterFrequencyFromText = bool(atoi(variableValue.c_str()));
         } else if (variableName == "grainLength") {
           configObject.grainLength = atof(variableValue.c_str());
         } else if (variableName == "outputFileName") {
